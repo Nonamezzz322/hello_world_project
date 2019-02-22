@@ -1,0 +1,22 @@
+{
+  "name": "amz_scrapper",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.jx",
+  "scripts": {
+    "start": "parcel ./src/index.html"
+  },
+  "dependencies": {
+    "lib-react-components": "^0.3.9",
+    "prop-types": "^15.6.2",
+    "puppeteer": "^1.12.2",
+    "react": "^16.7.0",
+    "react-redux": "^6.0.0",
+    "redux": "^4.0.1"
+  },
+  "devDependencies": {
+    "cssnano": "^4.1.7",
+    "fs": "0.0.1-security",
+    "parcel": "^1.11.0"
+  }
+}
