@@ -81,14 +81,17 @@ function crawlPage() {
         await page.goto(items[i]);
         // price
         let price;
+        let priceString;
         try {
             price = await page.$eval('#priceblock_ourprice', as => as.innerText);
         } catch {
             try {
-                price = await page.$eval('#olp-upd-new > span > a', as => as.innerText);
+                priceString  = await page.$eval('#olp-upd-new > span > a', as => as.innerText);
+                price = priceString.split('from ')[1];
             } catch {
                 try {
-                    price = await page.$eval('#olp-upd-new-used > span > a', as => as.innerText);
+                    priceString = await page.$eval('#olp-upd-new-used > span > a', as => as.innerText);
+                    price = priceString.split('from ')[1];
                 } catch {
                     price = 'no price';
                 };
@@ -101,23 +104,52 @@ function crawlPage() {
             stars = await page.$eval('#acrPopover > span.a-declarative > a > i.a-icon.a-icon-star > span', as => as.innerText)
         } catch {
             stars = 'no customer ratings';
-        }; //
+        };
 
+        // title
         const title = await page.$eval('#title > span', as => as.innerText);
+        // brand
         const brand = await page.$eval('#bylineInfo', as => as.innerText);
+        //url
+        const url = await page.url();
+        // buyBox
+        let buyBox;
+        try {
+            buyBox = await page.$eval('#add-to-cart-button', () => true)
+        } catch {
+            buyBox = false;
+        };
+        // category
+        const category = await page.$eval('#wayfinding-breadcrumbs_feature_div > ul > li:nth-child(1) > span > a', as => as.innerText);
+        // ASIN
+        const asin =  url.match("/([A-Z0-9]{10})")[1];
+        // BSR - работает, но слишком грузит память, найти другой способ
+        const bsr = ((await page.content()).match("([#0-9]*[,][0-9]+ in)")[0]).split(' in')[0];
+
+        // In Stock
+        let stock = false;
+        if(price !== 'no price') {
+            stock = true;
+        }
+
+        // sellers
+
+
         
         const obj = {
             name: title,
+            url: url,
             price: price,
             brand: brand,
-            asin: '-',
+            asin: asin,
             sellers: '-',
             stars: stars,
-            buyBox: '-',
+            buyBox: buyBox,
             prime: '-',
-            BSR: '-',
-            category:'-',
-            inStock: '-',
+            BSR: bsr,
+            category: category,
+            inStock: stock,
+            amazon: '-'
         }
         console.log(obj, i + 1);
         // fs.writeFileSync(`${items[i]}.json`, obj, () => {});
